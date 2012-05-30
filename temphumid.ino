@@ -38,7 +38,7 @@ float c2f(float temp) {
  */
 float getHumid(int sensor, float temp) {
   float vout = sensor / 1023.0;
-  float humid = (vout + 0.16) / 0.0062;
+  float humid = (vout - 0.16) / 0.0062;
   return humid / (1.0546 - 0.00216 * temp);
 }
 
