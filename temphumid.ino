@@ -9,8 +9,8 @@ int itemp;
 int ihumid;
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-byte ip[] = { 192, 168, 1, 80 };
-byte gateway[] = { 192, 168, 1, 1 };
+byte ip[] = { 10, 47, 0, 80 };
+byte gateway[] = { 10, 47, 0, 1 };
 byte subnet[] = { 255, 255, 255, 0 };
 
 bool farenheight = true;
