@@ -19,21 +19,6 @@ byte Ethernet::buffer[500];
 BufferFiller bfill;
 
 /**
- * Calculates humidity, compensates for temperature
- * Equations taken from datasheet: http://www.sparkfun.com/datasheets/Sensors/Weather/SEN-09569-HIH-4030-datasheet.pdf
- * Canceled out Vsupply
- *
- * @param humid sensor humidity
- * @param sensor temperature in degrees celsius
- * @returns temperature compensated humidity
- */
-float getHumid(int sensor, float temp) {
-  float vout = sensor / 1023.0;
-  float humid = (vout - 0.16) / 0.0062;
-  return humid / (1.0546 - 0.00216 * temp);
-}
-
-/**
  * Reads temparture from TMP102 via I2C
  *
  * @returns Signed int temperature in Celsius. Multiply by 0.0625 to get floating point value. If read fails -9999.
