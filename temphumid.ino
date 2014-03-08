@@ -1,5 +1,5 @@
 #include <SPI.h>
-#include <Ethernet.h>
+#include <EtherCard.h>
 #include <Wire.h>
 
 int humidPin = A0;
@@ -15,17 +15,8 @@ byte subnet[] = { 255, 255, 255, 0 };
 
 bool farenheight = true;
 
-EthernetServer server = EthernetServer(23);
-
-/**
- * Converts from celsius to farenheight
- *
- * @param temp Temperature in celsius
- * @return Temperature in farenheight
- */
-float c2f(float temp) {
-  return (temp * 9 / 5) + 32;
-}
+byte Ethernet::buffer[500];
+BufferFiller bfill;
 
 /**
  * Calculates humidity, compensates for temperature
@@ -71,43 +62,27 @@ void setup () {
   Serial.begin(9600);
   Wire.begin();
   
-  Ethernet.begin(mac, ip, gateway, subnet);
-  server.begin();
+  ether.begin(sizeof Ethernet::buffer, mac);
+  ether.staticSetup(ip, gateway);
 }
 
 void loop () {
-  EthernetClient client = server.available();
+  word len = ether.packetReceive();
+  word pos = ether.packetLoop(len);
 
-  if(client) {
-    if(client.available() > 0) {
-      char cmd = client.read();
-      
-      if(cmd == 'i' || cmd == 'f') {
-        itemp = readTemp();
-	//read humidity from HIH-4030
-        ihumid = analogRead(humidPin);
-      }
-      
-      if(cmd == 'i') {
-        server.print(itemp);
-        server.print(',');
-        server.print(ihumid);
-      } else if(cmd == 'f') {
-        float temp;
-        
-        if(itemp != -9999) {
-          temp = itemp * 0.0625;
-          if(farenheight)
-	    server.print(c2f(temp), 4);
-	  else
-	    server.print(temp, 4);
-
-          server.print(',');
-          server.print(getHumid(ihumid, temp), 4);
-        } else
-          server.print("-9999,-9999");
-      }
-      server.print("\n");
-    }
+  if(pos) {
+    itemp = readTemp();
+    //read humidity from HIH-4030
+    ihumid = analogRead(humidPin);
+    
+    bfill = ether.tcpOffset();
+    bfill.emit_p(PSTR(
+      "HTTP/1.0 200 OK\r\n"
+      "Content-Type: text/plain\r\n"
+      "Pragma: no-cache\r\n"
+      "\r\n"
+      "$D:$D"),
+      itemp, ihumid);
+    ether.httpServerReply(bfill.position());
   }  
 }
