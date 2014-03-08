@@ -1,6 +1,7 @@
 #include <SPI.h>
 #include <EtherCard.h>
 #include <Wire.h>
+#include <NanodeUNIO.h>
 
 int humidPin = A0;
 int tempAddr = 0x91 >> 1;
@@ -8,7 +9,6 @@ int tempAddr = 0x91 >> 1;
 int itemp;
 int ihumid;
 
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 byte ip[] = { 10, 47, 0, 80 };
 byte gateway[] = { 10, 47, 0, 1 };
 byte subnet[] = { 255, 255, 255, 0 };
@@ -47,6 +47,10 @@ void setup () {
   Serial.begin(9600);
   Wire.begin();
   
+  byte macaddr[6];
+  NanodeUNIO unio(NANODE_MAC_DEVICE);
+  unio.read(macaddr,NANODE_MAC_ADDRESS,6);
+
   ether.begin(sizeof Ethernet::buffer, mac);
   ether.staticSetup(ip, gateway);
 }
