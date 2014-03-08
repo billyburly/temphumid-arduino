@@ -81,7 +81,7 @@ void loop () {
       "Content-Type: text/plain\r\n"
       "Pragma: no-cache\r\n"
       "\r\n"
-      "$D:$D"),
+      "0:$D,$D"),
       itemp, ihumid);
     ether.httpServerReply(bfill.position());
   }  
