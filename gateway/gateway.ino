@@ -3,6 +3,7 @@
 #include <EtherCard.h>
 #include <Wire.h>
 #include <NanodeUNIO.h>
+#include "../rf12-common.h"
 
 int humidPin = A0;
 int tempAddr = 0x91 >> 1;
@@ -19,10 +20,8 @@ bool farenheight = true;
 byte Ethernet::buffer[500];
 BufferFiller bfill;
 #define NODEID 1
-#define NETWORK 47
 #define SEN1_NODE 2
 
-typedef struct { int temp, humid; } DataStructure;
 DataStructure payload;
 int ledPin = 6;
 

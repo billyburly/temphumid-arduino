@@ -1,12 +1,11 @@
 #include <JeeLib.h>
 #include <Wire.h>
+#include <rf12-common.h>
 
 int humidPin = A0;
 int tempAddr = 0x91 >> 1;
 
 #define NODEID 2
-#define NETWORK 47
-typedef struct { int temp, humid; } DataStructure;
 DataStructure payload;
 int ledPin = 6;
 unsigned long prevMillis = 0;
