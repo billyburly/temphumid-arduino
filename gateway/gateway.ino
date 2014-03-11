@@ -1,4 +1,5 @@
 #include <SPI.h>
+#include <JeeLib.h>
 #include <EtherCard.h>
 #include <Wire.h>
 #include <NanodeUNIO.h>
@@ -17,6 +18,13 @@ bool farenheight = true;
 
 byte Ethernet::buffer[500];
 BufferFiller bfill;
+#define NODEID 1
+#define NETWORK 47
+#define SEN1_NODE 2
+
+typedef struct { int temp, humid; } DataStructure;
+DataStructure payload;
+int ledPin = 6;
 
 /**
  * Reads temparture from TMP102 via I2C
@@ -51,14 +59,26 @@ void setup () {
   NanodeUNIO unio(NANODE_MAC_DEVICE);
   unio.read(macaddr,NANODE_MAC_ADDRESS,6);
 
-  ether.begin(sizeof Ethernet::buffer, mac);
+  ether.begin(sizeof Ethernet::buffer, macaddr);
   ether.staticSetup(ip, gateway);
+  
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, HIGH);
+  
+  rf12_initialize(NODEID,RF12_433MHZ,NETWORK);
+  Serial.println("init done");
 }
 
 void loop () {
   word len = ether.packetReceive();
   word pos = ether.packetLoop(len);
 
+  if (rf12_recvDone() && rf12_crc == 0) {
+    if ((rf12_hdr & 0x1F) == SEN1_NODE) {
+      payload = *(DataStructure*) rf12_data;
+    }
+  }
+  
   if(pos) {
     itemp = readTemp();
     //read humidity from HIH-4030
