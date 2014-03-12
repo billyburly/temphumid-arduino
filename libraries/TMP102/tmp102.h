@@ -1,7 +1,7 @@
 #ifndef TMP102_H_
 #define TMP102_H_
 
-int tempAddr = 0x91 >> 1;
+#define TEMP_ADDR 0x48
 
 /**
  * Reads temparture from TMP102 via I2C
@@ -11,7 +11,7 @@ int tempAddr = 0x91 >> 1;
 int readTemp(void) {
   byte msb, lsb;
   int temp;
-  Wire.requestFrom(tempAddr, 2);
+  Wire.requestFrom(TEMP_ADDR, 2);
   
   if (2 <= Wire.available()) {
     msb = Wire.read();
